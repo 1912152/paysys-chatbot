@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/chroma_db:/app/chroma_db
+      - ./backend/uploads:/app/uploads
+      - ./backend/paysys_chatbot.db:/app/paysys_chatbot.db
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  widget:
+    build: ./frontend/widget
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+  admin:
+    build: ./frontend/admin
+    ports:
+      - "3001:80"
+    restart: unless-stopped
+
+  agent:
+    build: ./frontend/agent
+    ports:
+      - "3002:80"
+    restart: unless-stopped
